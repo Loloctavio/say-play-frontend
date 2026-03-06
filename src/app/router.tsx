@@ -6,10 +6,11 @@ import { DashboardPage } from "../pages/DashboardPage";
 import { GeneratePage } from "../pages/GeneratePage";
 import { PlaylistDetailPage } from "../pages/PlaylistDetailPage";
 import { ProfilePage } from "../pages/ProfilePage";
-import { AboutPage } from "../pages/AboutPage";
 import { ProtectedLayout } from "../components/ProtectedLayout";
+import { LandingPage } from "../pages/LandingPage";
 
 export const router = createBrowserRouter([
+  { path: "/", element: <LandingPage /> },
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <RegisterPage /> },
 
@@ -19,11 +20,10 @@ export const router = createBrowserRouter([
       {
         element: <ProtectedLayout />,
         children: [
-          { path: "/", element: <DashboardPage /> },
+          { path: "/dashboard", element: <DashboardPage /> },
           { path: "/generate", element: <GeneratePage /> },
           { path: "/playlists/:playlistId", element: <PlaylistDetailPage /> },
           { path: "/profile", element: <ProfilePage /> },
-          { path: "/about", element: <AboutPage /> },
         ],
       },
     ],

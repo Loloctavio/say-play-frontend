@@ -28,7 +28,7 @@ export function RegisterPage() {
     try {
       const res = await registerApi(values);
       setToken(res.access_token);
-      nav("/");
+      nav("/dashboard");
     } catch (e: any) {
       setError("root", { message: e?.response?.data?.detail ?? "Register failed" });
     }
@@ -36,8 +36,42 @@ export function RegisterPage() {
 
   return (
     <Page style={{ minHeight: "calc(100vh - 20px)", display: "grid", placeItems: "center" }}>
+      <Link
+        to="/"
+        aria-label="Back to home"
+        style={{
+          position: "fixed",
+          top: 18,
+          left: 18,
+          width: 40,
+          height: 40,
+          borderRadius: 999,
+          border: "1px solid var(--border)",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 20,
+          fontWeight: 700,
+          background: "var(--panel)",
+          color: "var(--text)",
+          boxShadow: "var(--shadow)",
+          zIndex: 30,
+        }}
+      >
+        ←
+      </Link>
       <div style={{ width: "min(610px, 100%)" }}>
         <Card style={{ padding: 24 }}>
+          <img
+            src="/logo.png"
+            alt="AuraCue logo"
+            style={{
+              width: "clamp(120px, 24vw, 190px)",
+              height: "auto",
+              display: "block",
+              margin: "0 auto 10px",
+            }}
+          />
           <Row style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
             <div>
               <H1>Register</H1>

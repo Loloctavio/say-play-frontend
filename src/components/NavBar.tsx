@@ -1,8 +1,6 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useTheme } from "../theme";
-import { clearToken } from "../lib/auth";
-import { useQueryClient } from "@tanstack/react-query";
-import { Card, Row, Pill, Button, PrimaryButton } from "./ui";
+import { Card, Row, Pill } from "./ui";
 
 function NavItem({ to, label }: { to: string; label: string }) {
   const { pathname } = useLocation();
@@ -32,15 +30,25 @@ function NavItem({ to, label }: { to: string; label: string }) {
 }
 
 export function NavBar() {
-  const { theme, toggle } = useTheme();
+  const { pathname } = useLocation();
   const nav = useNavigate();
-  const qc = useQueryClient();
+  const [isMobile, setIsMobile] = useState(false);
 
-  const logout = () => {
-    clearToken();
-    qc.clear();
-    nav("/login");
-  };
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 760px)");
+    const sync = () => setIsMobile(mql.matches);
+    sync();
+    mql.addEventListener("change", sync);
+    return () => mql.removeEventListener("change", sync);
+  }, []);
+
+  const navValue = (() => {
+    if (pathname === "/") return "/";
+    if (pathname === "/dashboard" || pathname.startsWith("/playlists/")) return "/dashboard";
+    if (pathname === "/generate") return "/generate";
+    if (pathname === "/profile") return "/profile";
+    return "";
+  })();
 
   return (
     <div
@@ -57,28 +65,84 @@ export function NavBar() {
         <Row style={{ justifyContent: "space-between", alignItems: "center", gap: 10 }}>
           <Row style={{ flex: "1 1 520px", minWidth: 0, gap: 10 }}>
             <Pill>
-              <span style={{ fontWeight: 800, letterSpacing: "-0.02em", color: "var(--text)" }}>SayPlay</span>
+              <img
+                src="/icon.png"
+                alt="AuraCue icon"
+                style={{ width: 20, height: 20, borderRadius: 6, objectFit: "cover" }}
+              />
+              <span style={{ fontWeight: 800, letterSpacing: "-0.02em", color: "var(--text)" }}>AuraCue</span>
             </Pill>
 
-            <Row
-              style={{
-                gap: 10,
-                flexWrap: "nowrap",
-                overflowX: "auto",
-                maxWidth: "100%",
-                paddingBottom: 2,
-              }}
-            >
-              <NavItem to="/" label="Playlists" />
-              <NavItem to="/generate" label="Generate" />
-              <NavItem to="/profile" label="Profile" />
-              <NavItem to="/about" label="How it works" />
-            </Row>
-          </Row>
-
-          <Row style={{ gap: 10, marginLeft: "auto" }}>
-            <Button onClick={toggle}>{theme === "light" ? "Dark" : "Light"}</Button>
-            <PrimaryButton onClick={logout}>Logout</PrimaryButton>
+            {isMobile ? (
+              <div
+                style={{
+                  position: "relative",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  minWidth: 190,
+                  borderRadius: 14,
+                  border: "1px solid var(--border)",
+                  background: "color-mix(in srgb, var(--panel) 92%, transparent)",
+                  boxShadow: "var(--shadow)",
+                }}
+              >
+                <select
+                  aria-label="Navigation"
+                  value={navValue}
+                  onChange={(event) => {
+                    const to = event.target.value;
+                    if (to) nav(to);
+                  }}
+                  style={{
+                    appearance: "none",
+                    WebkitAppearance: "none",
+                    minHeight: 42,
+                    width: "100%",
+                    borderRadius: 14,
+                    border: "none",
+                    background: "transparent",
+                    color: "var(--text)",
+                    padding: "0 40px 0 13px",
+                    fontSize: 14,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    outline: "none",
+                  }}
+                >
+                  <option value="/">Home</option>
+                  <option value="/dashboard">Playlists</option>
+                  <option value="/generate">Generate</option>
+                  <option value="/profile">Profile</option>
+                </select>
+                <span
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    right: 12,
+                    fontSize: 12,
+                    color: "var(--muted)",
+                    pointerEvents: "none",
+                  }}
+                >
+                  ▾
+                </span>
+              </div>
+            ) : (
+              <Row
+                style={{
+                  gap: 10,
+                  flexWrap: "nowrap",
+                  overflowX: "auto",
+                  maxWidth: "100%",
+                  paddingBottom: 2,
+                }}
+              >
+                <NavItem to="/" label="Home" />
+                <NavItem to="/dashboard" label="Playlists" />
+                <NavItem to="/generate" label="Generate" />
+                <NavItem to="/profile" label="Profile" />
+              </Row>
+            )}
           </Row>
         </Row>
       </Card>
