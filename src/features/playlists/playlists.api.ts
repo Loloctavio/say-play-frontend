@@ -4,6 +4,8 @@ import type {
   PlaylistGenerateRequest,
   PlaylistOut,
   PlaylistSaveRequest,
+  SpotifyExportOut,
+  SpotifyExportPayload,
   PlaylistUpdate,
 } from "./playlists.types";
 
@@ -34,5 +36,13 @@ export async function updatePlaylist(playlistId: string, payload: PlaylistUpdate
 
 export async function deletePlaylist(playlistId: string): Promise<{ deleted: boolean }> {
   const { data } = await api.delete<{ deleted: boolean }>(`/playlists/${playlistId}`);
+  return data;
+}
+
+export async function exportPlaylistToSpotify(
+  playlistId: string,
+  payload: SpotifyExportPayload = { public: true }
+): Promise<SpotifyExportOut> {
+  const { data } = await api.post<SpotifyExportOut>(`/playlists/${playlistId}/spotify`, payload);
   return data;
 }

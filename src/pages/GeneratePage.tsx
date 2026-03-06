@@ -107,6 +107,10 @@ export function GeneratePage() {
                 Save
               </Button>
 
+              <Button disabled={!draft || loading} onClick={() => setDraft(null)}>
+                Clear draft
+              </Button>
+
               <Muted style={{ margin: 0 }}>{draft ? "Draft ready" : "No draft yet"}</Muted>
             </Row>
           </Card>
@@ -117,40 +121,25 @@ export function GeneratePage() {
               <Muted>{draft.description_suggestion ?? "No description"}</Muted>
 
               <ol style={{ marginTop: 14, paddingLeft: 20, display: "grid", gap: 10 }}>
-                {draft.songs.map((song, index) => (
-                  <li key={`${songLabel(song)}-${index}`} style={{ lineHeight: 1.35 }}>
-                    <strong>{songLabel(song)}</strong>
-                    {song.reason ? <div style={{ color: "var(--muted)" }}>{String(song.reason)}</div> : null}
-                    <div style={{ marginTop: 6, display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          minHeight: 24,
-                          padding: "0 9px",
-                          borderRadius: 999,
-                          border: "1px solid var(--border)",
-                          fontSize: 12,
-                          color: "var(--muted)",
-                        }}
-                      >
-                        Agent: {agentsLabel(song)}
-                      </span>
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          minHeight: 24,
-                          padding: "0 9px",
-                          borderRadius: 999,
-                          border: "1px solid var(--border)",
-                          fontSize: 12,
-                          color: isVerified(song) ? "var(--primary)" : "var(--muted)",
-                        }}
-                      >
-                        Verified: {verificationStatus(song)}
-                      </span>
-                      {typeof song.verified?.confidence === "number" ? (
+                {draft.songs.map((song, index) => {
+                  const spotifyUrl =
+                    typeof song.spotify_url === "string"
+                      ? song.spotify_url
+                      : typeof song.verified?.spotify_url === "string"
+                        ? song.verified.spotify_url
+                        : null;
+
+                  return (
+                    <li key={`${songLabel(song)}-${index}`} style={{ lineHeight: 1.35 }}>
+                      {spotifyUrl ? (
+                        <a href={spotifyUrl} target="_blank" rel="noreferrer">
+                          <strong>{songLabel(song)}</strong>
+                        </a>
+                      ) : (
+                        <strong>{songLabel(song)}</strong>
+                      )}
+                      {song.reason ? <div style={{ color: "var(--muted)" }}>{String(song.reason)}</div> : null}
+                      <div style={{ marginTop: 6, display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <span
                           style={{
                             display: "inline-flex",
@@ -163,12 +152,42 @@ export function GeneratePage() {
                             color: "var(--muted)",
                           }}
                         >
-                          Confidence: {Math.round(song.verified.confidence * 100)}%
+                          Agent: {agentsLabel(song)}
                         </span>
-                      ) : null}
-                    </div>
-                  </li>
-                ))}
+                        <span
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            minHeight: 24,
+                            padding: "0 9px",
+                            borderRadius: 999,
+                            border: "1px solid var(--border)",
+                            fontSize: 12,
+                            color: isVerified(song) ? "var(--primary)" : "var(--muted)",
+                          }}
+                        >
+                          Verified: {verificationStatus(song)}
+                        </span>
+                        {typeof song.verified?.confidence === "number" ? (
+                          <span
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              minHeight: 24,
+                              padding: "0 9px",
+                              borderRadius: 999,
+                              border: "1px solid var(--border)",
+                              fontSize: 12,
+                              color: "var(--muted)",
+                            }}
+                          >
+                            Confidence: {Math.round(song.verified.confidence * 100)}%
+                          </span>
+                        ) : null}
+                      </div>
+                    </li>
+                  );
+                })}
               </ol>
             </Card>
           )}
