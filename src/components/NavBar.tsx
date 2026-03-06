@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { clearToken } from "../lib/auth";
-import { useQueryClient } from "@tanstack/react-query";
-import { Card, Row, Pill, PrimaryButton } from "./ui";
+import { Card, Row, Pill } from "./ui";
 
 function NavItem({ to, label }: { to: string; label: string }) {
   const { pathname } = useLocation();
@@ -34,7 +32,6 @@ function NavItem({ to, label }: { to: string; label: string }) {
 export function NavBar() {
   const { pathname } = useLocation();
   const nav = useNavigate();
-  const qc = useQueryClient();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -52,12 +49,6 @@ export function NavBar() {
     if (pathname === "/profile") return "/profile";
     return "";
   })();
-
-  const logout = () => {
-    clearToken();
-    qc.clear();
-    nav("/");
-  };
 
   return (
     <div
