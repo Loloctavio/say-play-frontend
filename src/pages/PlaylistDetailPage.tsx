@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { deletePlaylist, getPlaylist, updatePlaylist } from "../features/playlists/playlists.api";
+import { deletePlaylist, exportPlaylistToSpotify, getPlaylist, updatePlaylist } from "../features/playlists/playlists.api";
 import type { Song } from "../features/playlists/playlists.types";
 import {
   Button,
@@ -80,6 +80,19 @@ export function PlaylistDetailPage() {
     },
   });
 
+  const exportMut = useMutation({
+    mutationFn: () => exportPlaylistToSpotify(playlistId!, { public: true }),
+    onSuccess: (result) => {
+      alert("Playlist saved to Spotify successfully.");
+      if (result.spotify_playlist_url) {
+        window.open(result.spotify_playlist_url, "_blank", "noopener,noreferrer");
+      }
+    },
+    onError: () => {
+      alert("Could not export this playlist to Spotify.");
+    },
+  });
+
   if (isLoading) return <Page>Loading...</Page>;
   if (!data) return <Page>Playlist not found.</Page>;
 
@@ -95,6 +108,9 @@ export function PlaylistDetailPage() {
 
       <Row style={{ marginTop: 14 }}>
         <Button onClick={() => setEditing((value) => !value)}>{editing ? "Cancel" : "Edit"}</Button>
+        <PrimaryButton disabled={exportMut.isPending} onClick={() => exportMut.mutate()}>
+          {exportMut.isPending ? "Saving..." : "Save to Spotify"}
+        </PrimaryButton>
         <DangerButton
           disabled={deleteMut.isPending}
           onClick={() => {

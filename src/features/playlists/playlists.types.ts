@@ -62,3 +62,15 @@ export type PlaylistUpdate = {
   total_songs?: number | null;
   total_duration_ms?: number | null;
 };
+
+export type SpotifyExportPayload = {
+  public?: boolean;
+};
+
+export type SpotifyExportOut = {
+  exported: boolean;
+  spotify_playlist_id: string;
+  spotify_playlist_url?: string | null;
+  added_tracks: number;
+  total_songs: number;
+};
