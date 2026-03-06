@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { changePassword, deleteMe, getSpotifyConnectUrl, me, updateMe } from "../features/users/users.api";
 import { clearToken } from "../lib/auth";
+import { useTheme } from "../theme";
 import {
   Button,
   Card,
@@ -20,6 +21,7 @@ import {
 } from "../components/ui";
 
 export function ProfilePage() {
+  const { theme, toggle } = useTheme();
   const nav = useNavigate();
   const location = useLocation();
   const qc = useQueryClient();
@@ -58,12 +60,12 @@ export function ProfilePage() {
     onSuccess: () => {
       clearToken();
       qc.clear();
-      nav("/login");
+      nav("/");
     },
   });
 
   const connectSpotifyMut = useMutation({
-    mutationFn: () => getSpotifyConnectUrl("/"),
+    mutationFn: () => getSpotifyConnectUrl("/dashboard"),
     onSuccess: (url) => {
       window.location.assign(url);
     },
@@ -87,7 +89,7 @@ export function ProfilePage() {
   const logout = () => {
     clearToken();
     qc.clear();
-    nav("/login");
+    nav("/");
   };
 
   if (isLoading) return <Page>Loading...</Page>;
@@ -122,11 +124,18 @@ export function ProfilePage() {
               <Input value={username} onChange={(event) => setUsername(event.target.value)} />
             </div>
 
+            <Divider />
+
+            <Row>
+              <Pill>Theme: {theme === "light" ? "Light" : "Dark"}</Pill>
+              <Button onClick={toggle}>Switch to {theme === "light" ? "Dark" : "Light"}</Button>
+            </Row>
+
             <Row>
               <PrimaryButton disabled={updateMut.isPending} onClick={() => updateMut.mutate()}>
                 {updateMut.isPending ? "Saving..." : "Save profile"}
               </PrimaryButton>
-              <Link to="/" style={{ alignSelf: "center", fontWeight: 600 }}>
+              <Link to="/dashboard" style={{ alignSelf: "center", fontWeight: 600 }}>
                 Back
               </Link>
             </Row>

@@ -30,7 +30,7 @@ type SpotifyConnectResponse = {
   authorization_url: string;
 };
 
-export async function getSpotifyConnectUrl(redirectTo = "/profile"): Promise<string> {
+export async function getSpotifyConnectUrl(redirectTo = "/dashboard"): Promise<string> {
   const { data } = await api.get<SpotifyConnectResponse>("/spotify/connect", {
     params: { redirect_to: redirectTo },
   });

@@ -64,6 +64,13 @@ body {
   line-height: 1.45;
 }
 
+[data-theme="dark"] body {
+  background:
+    radial-gradient(1200px 740px at 26% 0%, rgba(201, 115, 58, 0.15), transparent 60%),
+    radial-gradient(960px 700px at 82% 20%, rgba(227, 163, 107, 0.16), transparent 60%),
+    var(--bg);
+}
+
 h1,
 h2,
 h3 {
@@ -98,6 +105,13 @@ code {
 
 @media (max-width: 740px) {
   body {
+    background:
+      radial-gradient(900px 640px at 26% 0%, rgba(201, 115, 58, 0.14), transparent 64%),
+      radial-gradient(720px 560px at 78% 22%, rgba(227, 163, 107, 0.14), transparent 62%),
+      var(--bg);
+  }
+
+  [data-theme="dark"] body {
     background:
       radial-gradient(900px 640px at 26% 0%, rgba(201, 115, 58, 0.14), transparent 64%),
       radial-gradient(720px 560px at 78% 22%, rgba(227, 163, 107, 0.14), transparent 62%),

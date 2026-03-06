@@ -76,7 +76,7 @@ export function PlaylistDetailPage() {
     mutationFn: () => deletePlaylist(playlistId!),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["playlists", "me"] });
-      nav("/");
+      nav("/dashboard");
     },
   });
 
@@ -119,7 +119,7 @@ export function PlaylistDetailPage() {
         >
           {deleteMut.isPending ? "Deleting..." : "Delete"}
         </DangerButton>
-        <Link to="/" style={{ alignSelf: "center", fontWeight: 600 }}>
+        <Link to="/dashboard" style={{ alignSelf: "center", fontWeight: 600 }}>
           Back
         </Link>
       </Row>
