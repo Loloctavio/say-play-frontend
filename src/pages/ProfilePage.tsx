@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { changePassword, deleteMe, getSpotifyConnectUrl, me, updateMe } from "../features/users/users.api";
+import { changePassword, deleteMe, disconnectSpotify, getSpotifyConnectUrl, me, updateMe } from "../features/users/users.api";
 import { clearToken } from "../lib/auth";
 import { useTheme } from "../theme";
 import {
@@ -71,6 +71,13 @@ export function ProfilePage() {
     },
   });
 
+  const disconnectSpotifyMut = useMutation({
+    mutationFn: disconnectSpotify,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["users", "me"] });
+    },
+  });
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const spotify = params.get("spotify");
@@ -84,7 +91,10 @@ export function ProfilePage() {
     if (spotify === "error") {
       alert(message ? `Spotify error: ${message}` : "Spotify connection failed.");
     }
-  }, [location.search, qc]);
+
+    // Clear callback params so future reconnect callbacks always trigger this effect.
+    nav("/profile", { replace: true });
+  }, [location.search, qc, nav]);
 
   const logout = () => {
     clearToken();
@@ -94,6 +104,7 @@ export function ProfilePage() {
 
   if (isLoading) return <Page>Loading...</Page>;
   if (!data) return <Page>Could not load profile.</Page>;
+  const spotifyConnected = Boolean(data.spotify_connected || data.spotify?.spotify_user_id);
 
   return (
     <Page>
@@ -151,7 +162,7 @@ export function ProfilePage() {
           <Stack>
             <Row>
               <Pill>
-                {data.spotify_connected ? "Spotify connected" : "Spotify not connected"}
+                {spotifyConnected ? "Spotify connected" : "Spotify not connected"}
               </Pill>
             </Row>
 
@@ -161,11 +172,25 @@ export function ProfilePage() {
 
             <PrimaryButton
               onClick={() => connectSpotifyMut.mutate()}
-              disabled={connectSpotifyMut.isPending}
+              disabled={spotifyConnected || connectSpotifyMut.isPending}
               style={{ width: "fit-content" }}
             >
-              {connectSpotifyMut.isPending ? "Connecting..." : "Connect with Spotify"}
+              {connectSpotifyMut.isPending ? "Connecting..." : spotifyConnected ? "Connected" : "Connect with Spotify"}
             </PrimaryButton>
+
+            <DangerButton
+              onClick={() => {
+                if (confirm("Disconnect your Spotify account?")) disconnectSpotifyMut.mutate();
+              }}
+              disabled={!spotifyConnected || disconnectSpotifyMut.isPending}
+              style={{ width: "fit-content" }}
+            >
+              {disconnectSpotifyMut.isPending ? "Disconnecting..." : "Disconnect Spotify"}
+            </DangerButton>
+
+            <Muted style={{ marginTop: 0 }}>
+              Spotify data used in this app stays linked to Spotify content and links.
+            </Muted>
           </Stack>
         </Card>
 
