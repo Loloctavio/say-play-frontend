@@ -8,7 +8,7 @@ export function PrivacyPage() {
         <Divider />
         <Stack>
           <Muted>
-            SayPlay uses Spotify APIs to verify tracks and optionally create playlists in your Spotify account after you
+            AuraCue uses Spotify APIs to verify tracks and optionally create playlists in your Spotify account after you
             grant consent.
           </Muted>
           <Muted>
@@ -18,7 +18,7 @@ export function PrivacyPage() {
             If you disconnect Spotify, the app removes stored Spotify connection tokens from your account record.
           </Muted>
           <Muted>
-            Spotify content in SayPlay is displayed with links back to Spotify and is not offered as downloadable audio.
+            Spotify content in AuraCue is displayed with links back to Spotify and is not offered as downloadable audio.
           </Muted>
         </Stack>
       </Card>

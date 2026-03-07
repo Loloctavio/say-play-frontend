@@ -101,6 +101,7 @@ export function ProfilePage() {
 
   if (isLoading) return <Page>Loading...</Page>;
   if (!data) return <Page>Could not load profile.</Page>;
+  const spotifyConnected = Boolean(data.spotify_connected || data.spotify?.spotify_user_id);
 
   return (
     <Page>
@@ -158,7 +159,7 @@ export function ProfilePage() {
           <Stack>
             <Row>
               <Pill>
-                {data.spotify_connected ? "Spotify connected" : "Spotify not connected"}
+                {spotifyConnected ? "Spotify connected" : "Spotify not connected"}
               </Pill>
             </Row>
 
@@ -168,17 +169,17 @@ export function ProfilePage() {
 
             <PrimaryButton
               onClick={() => connectSpotifyMut.mutate()}
-              disabled={connectSpotifyMut.isPending}
+              disabled={spotifyConnected || connectSpotifyMut.isPending}
               style={{ width: "fit-content" }}
             >
-              {connectSpotifyMut.isPending ? "Connecting..." : "Connect with Spotify"}
+              {connectSpotifyMut.isPending ? "Connecting..." : spotifyConnected ? "Connected" : "Connect with Spotify"}
             </PrimaryButton>
 
             <DangerButton
               onClick={() => {
                 if (confirm("Disconnect your Spotify account?")) disconnectSpotifyMut.mutate();
               }}
-              disabled={!data.spotify_connected || disconnectSpotifyMut.isPending}
+              disabled={!spotifyConnected || disconnectSpotifyMut.isPending}
               style={{ width: "fit-content" }}
             >
               {disconnectSpotifyMut.isPending ? "Disconnecting..." : "Disconnect Spotify"}
